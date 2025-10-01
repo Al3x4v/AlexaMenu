@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>onda</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: black;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+    <canvas id="canvas" width="2100" height="1080"></canvas>
+    <script>
+      window.onload = function () {
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d');
+
+        // Crear objetos imagen
+        var carro = new Image();
+        var fondo = new Image();
+
+        // Posiciones
+        var carroX = -300;
+        var centerY = 70;
+        var range = 50;
+        var angle = 0;
+
+        // Variables para movimiento
+        var xspeed = 2;       // velocidad en x
+        var yspeed = 0.05;   // velocidad de oscilación en y
+
+        // Cargar las imágenes
+        carro.src = "nave.png";
+        fondo.src = "space_background.png";
+
+        // Opcional: manejo de errores en carga
+        fondo.onerror = function() {
+          console.error("Error cargando fondo.png. Verifica que la ruta sea correcta y que el archivo exista.");
+        };
+
+        carro.onerror = function() {
+          console.error("Error cargando car.png. Verifica que la ruta sea correcta y que el archivo exista.");
+        };
+
+        // Cuando la imagen de fondo esté cargada, comenzar la animación
+        fondo.onload = function() {
+          // También esperamos que la carroza cargue
+          if (carro.complete) {
+            animate();
+          } else {
+            carro.onload = animate;
+          }
+        };
+
+        function animate() {
+          window.requestAnimationFrame(animate);
+          // Dibujar el fondo en cada cuadro
+          context.drawImage(fondo, 0, 0, canvas.width-600, canvas.height-420);
+            // --- Title text ---
+          context.save();
+          context.font = "bold 48px Impact, sans-serif";
+          context.fillStyle = "#8dcfec";
+          context.textAlign = "center";
+          context.fillText("OBJETO NO IDENTIFICADO", canvas.width / 3, 100);
+          context.restore();
+          // Actualizar posición en X
+          carroX += xspeed+0.7;
+          centerY +=0.6; // Mover la línea base hacia abajo
+
+          // Calcular la posición en Y usando seno
+          var ypos = centerY + Math.sin(angle) * range;
+          angle += yspeed;
+
+          // Dibujar la imagen de la carroza
+          context.drawImage(carro, carroX, ypos, 120, 108);
+          if (carroX > canvas.width) {
+            carroX = -120; // Reiniciar posición cuando salga de la pantalla
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
