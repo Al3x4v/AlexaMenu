@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Escenita chida con Casita, Abeja, Honguito y Luna</title>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #1d1f33; /* fondo oscuro, pa que se vea nocturno */
+  }
+  canvas {
+    border: 2px solid #222;
+    background: linear-gradient(to top, #1d3c6a, #243b6b); /* cielo tipo noche con degradado */
+  }
+</style>
+</head>
+<body>
+  <canvas id="canvas" width="700" height="500"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+// =========================
+// PASTITO (pa que no flote la casa jajaja)
+// =========================
+ctx.fillStyle = "#2f7d32"; // verde intenso
+ctx.fillRect(0, 400, 700, 100);
+
+// =========================
+// ESTRELLITAS (más grandes pa que luzca el vector)
+// =========================
+function drawStar(cx, cy, spikes, outerR, innerR, color="#ffeb70") {
+  let rot = Math.PI / 2 * 3;
+  let step = Math.PI / spikes;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - outerR);
+  for (let i = 0; i < spikes; i++) {
+    ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+    rot += step;
+    ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+    rot += step;
+  }
+  ctx.closePath();
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = "#f9f3c2";
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.stroke();
+}
+
+// ahora las estrellas son más grandes y se ven mejor vectorizadas
+for (let i = 0; i < 12; i++) {
+  const x = Math.random() * 700;
+  const y = Math.random() * 200;
+  const size = 6 + Math.random() * 4; // ⭐️ antes era chiquito, ahora brilla más
+  drawStar(x, y, 5, size, size / 2, "#fffacd");
+}
+
+// =========================
+// LUNA (pa que haya luz, pero con su sombrita toda estética)
+// =========================
+ctx.save();
+ctx.beginPath();
+ctx.arc(600, 100, 40, 0, Math.PI * 2);
+ctx.fillStyle = "#f0e5c9";
+ctx.fill();
+ctx.strokeStyle = "#d8c9a3";
+ctx.stroke();
+
+// hacemos que se vea tipo luna creciente
+ctx.globalCompositeOperation = "destination-out";
+ctx.beginPath();
+ctx.arc(615, 95, 40, 0, Math.PI * 2);
+ctx.fill();
+ctx.globalCompositeOperation = "source-over";
+ctx.restore();
+
+// =========================
+// CASITA (wah wah)
+// =========================
+ctx.save();
+ctx.lineWidth = 2;
+ctx.strokeStyle = "#222";
+
+// paredcita
+ctx.fillStyle = "#a5694f"; // color terracota
+ctx.fillRect(100, 280, 140, 120);
+ctx.strokeRect(100, 280, 140, 120);
+
+// techito bien rojito
+ctx.beginPath();
+ctx.moveTo(90, 280);
+ctx.lineTo(170, 210);
+ctx.lineTo(250, 280);
+ctx.closePath();
+ctx.fillStyle = "#cc4c36";
+ctx.fill();
+ctx.stroke();
+
+// puerta humilde pero firme
+ctx.fillStyle = "#4b2c20";
+ctx.fillRect(150, 330, 40, 70);
+ctx.strokeRect(150, 330, 40, 70);
+
+// ventanita pa chismear
+ctx.fillStyle = "#d4f0ff";
+ctx.fillRect(115, 310, 25, 25);
+ctx.strokeRect(115, 310, 25, 25);
+ctx.restore();
+
+// =========================
+// HONGUITO (tipo Mario, pa decorar el jardín jaja)
+// =========================
+ctx.save();
+// tronquito
+ctx.fillStyle = "#e0a96d";
+ctx.fillRect(300, 340, 40, 60);
+ctx.strokeRect(300, 340, 40, 60);
+
+// sombrero morado fachero
+ctx.beginPath();
+ctx.arc(320, 340, 60, Math.PI, 0, false);
+ctx.fillStyle = "#8b48c8";
+ctx.fill();
+ctx.stroke();
+
+// puntitos fancy
+ctx.fillStyle = "#fff97c";
+ctx.beginPath(); ctx.arc(290, 320, 10, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+ctx.beginPath(); ctx.arc(320, 305, 12, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+ctx.beginPath(); ctx.arc(350, 325, 8, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+ctx.restore();
+
+// =========================
+// ABEJITA (volando chida por el cielo)
+// =========================
+ctx.save();
+
+// cuerpito amarillo feliz
+ctx.fillStyle = "#f9d44c";
+ctx.fillRect(460, 220, 60, 40);
+ctx.strokeRect(460, 220, 60, 40);
+
+// franjas negritas pa verse pro
+ctx.fillStyle = "#3c2f24";
+ctx.fillRect(470, 220, 10, 40);
+ctx.fillRect(490, 220, 10, 40);
+ctx.fillRect(510, 220, 10, 40);
+
+// alitas transparentes, bien coquetas
+ctx.fillStyle = "rgba(220,255,255,0.8)";
+ctx.beginPath();
+ctx.ellipse(475, 205, 20, 10, Math.PI / 6, 0, Math.PI * 2);
+ctx.fill();
+ctx.beginPath();
+ctx.ellipse(505, 205, 20, 10, -Math.PI / 6, 0, Math.PI * 2);
+ctx.fill();
+
+// ojito cute
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(515, 230, 10, 10);
+ctx.fillStyle = "#000000";
+ctx.fillRect(519, 233, 4, 4);
+ctx.restore();
+
+</script>
+</body>
+</html>
