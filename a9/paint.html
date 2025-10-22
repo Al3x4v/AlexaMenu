@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mini Paint Deluxe Mexa v3.5</title>
+  <style>
+    body {
+      background: #000000;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .paint-container {
+      display: grid;
+      grid-template-columns: 220px 3px 1fr;
+      background: url('simon-coroller-nd6rgow_gif 948×453 pixels.gif') no-repeat center center; 
+      background-size: cover;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      padding: 30px;
+      gap: 20px;
+      width: 95%;
+      max-width: 1300px;
+      max-height: 90vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      justify-self: center;
+      width: 700px;
+      height: 700px;
+      border-radius: 15px;
+      border: 5px solid #444;
+    }
+
+    .canvas-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: white;
+      border-radius: 15px;
+      z-index: 0;
+    }
+
+    canvas {
+      position: relative;
+      z-index: 1;
+      width: 700px;
+      height: 700px;
+      border-radius: 15px;
+      cursor: none;
+      background: transparent;
+      display: block;
+    }
+
+    .tools {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      width: 200px;
+      height: 700px;
+      box-sizing: border-box;
+    }
+
+    .top-buttons, .middle-colors, .bottom-size {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .top-buttons button {
+      border: none;
+      padding: 12px 0;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      color: white;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .top-buttons button:hover {
+      transform: scale(1.05);
+    }
+
+    #eraser {
+      background: #888;
+    }
+
+    #clearAll {
+      background: #222;
+    }
+
+    .colors {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      justify-items: center;
+      width: 100%;
+    }
+
+    .color {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      border: 2px solid #222;
+      cursor: pointer;
+    }
+
+    .sizes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .label {
+      font-size: 15px;
+      font-weight: bold;
+      color: #333;
+      width: 100%;
+      text-align: center;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 12px;
+      border-radius: 6px;
+      background: #ddd;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      background: #444;
+      border-radius: 50%;
+      border: 2px solid #222;
+      margin-top: -6px;
+    }
+
+    input[type="range"]:hover::-webkit-slider-thumb {
+      background-color: #222;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: #444;
+      border-radius: 50%;
+      border: 2px solid #222;
+    }
+
+    .divider {
+      border-left: 3px dashed #ccc;
+      height: 100%;
+      margin-right: 10px;
+      margin-left: 100px;
+    }
+
+    #pointer {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: black;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <div class="paint-container">
+    <div class="tools">
+      <div class="top-buttons">
+        <button id="eraser">Borrador</button>
+        <button id="clearAll">Borrar todo</button>
+      </div>
+      <div class="middle-colors">
+        <div class="colors">
+          <div class="color" style="background:red" data-color="red"></div>
+          <div class="color" style="background:green" data-color="green"></div>
+          <div class="color" style="background:blue" data-color="blue"></div>
+          <div class="color" style="background:yellow" data-color="yellow"></div>
+          <div class="color" style="background:purple" data-color="purple"></div>
+          <div class="color" style="background:orange" data-color="orange"></div>
+          <div class="color" style="background:pink" data-color="pink"></div>
+          <div class="color" style="background:brown" data-color="brown"></div>
+          <div class="color" style="background:gray" data-color="gray"></div>
+          <div class="color" style="background:black" data-color="black"></div>
+        </div>
+      </div>
+      <div class="bottom-size">
+        <div class="sizes">
+          <div class="label">Grosor</div>
+          <input type="range" id="lineWidthRange" min="1" max="40" value="2" />
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="canvas-wrapper">
+      <div class="canvas-bg"></div>
+      <canvas id="paint" width="700" height="700"></canvas>
+    </div>
+  </div>
+  <div id="pointer"></div>
+
+  <script>
+    const canvas = document.getElementById("paint");
+    const ctx = canvas.getContext("2d");
+    const pointer = document.getElementById("pointer");
+    let color = "black";
+    let lineWidth = 2;
+    let painting = false;
+    let erasing = false;
+
+    canvas.addEventListener("mousemove", e => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      pointer.style.left = e.clientX + "px";
+      pointer.style.top = e.clientY + "px";
+      if (painting) {
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+    });
+
+    canvas.addEventListener("mousedown", e => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      painting = true;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.strokeStyle = erasing ? "white" : color;
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = "round";
+    });
+
+    canvas.addEventListener("mouseup", () => {
+      painting = false;
+      ctx.closePath();
+    });
+
+    document.querySelectorAll(".color").forEach(btn => {
+      btn.addEventListener("click", () => {
+        color = btn.dataset.color;
+        erasing = false;
+      });
+    });
+
+    document.getElementById("eraser").addEventListener("click", () => {
+      erasing = true;
+    });
+
+    document.getElementById("clearAll").addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    document.getElementById("lineWidthRange").addEventListener("input", e => {
+      lineWidth = parseInt(e.target.value, 10);
+    });
+  </script>
+</body>
+</html>
