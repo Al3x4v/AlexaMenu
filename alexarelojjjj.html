@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Reloj con fondo blanco</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #000000;
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="fondo"></canvas>
+<canvas id="reloj" width="400" height="400" style="position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);"></canvas>
+
+<script>
+const fondo = document.getElementById("fondo");
+const ctxFondo = fondo.getContext("2d");
+const reloj = document.getElementById("reloj");
+const ctx = reloj.getContext("2d");
+const cx = reloj.width / 2;
+const cy = reloj.height / 1.7;
+
+fondo.width = window.innerWidth;
+fondo.height = window.innerHeight;
+
+// Partículas tipo lava (cuadraditos que caen)
+let particulas = [];
+for (let i = 0; i < 200; i++) {
+  particulas.push({
+    x: Math.random() * fondo.width,
+    y: Math.random() * fondo.height,
+    s: Math.random() * 6 + 2,
+    v: Math.random() * 2 + 0.5,
+    color: `hsl(${20 + Math.random() * 30}, 100%, ${40 + Math.random() * 30}%)`
+  });
+}
+
+function dibujarFondo() {
+  ctxFondo.fillStyle = "rgba(255,255,255,0.6)";
+  ctxFondo.fillRect(0, 0, fondo.width, fondo.height);
+  for (let p of particulas) {
+    ctxFondo.fillStyle = p.color;
+    ctxFondo.fillRect(p.x, p.y, p.s, p.s);
+    p.y += p.v;
+    if (p.y > fondo.height) {
+      p.y = -10;
+      p.x = Math.random() * fondo.width;
+    }
+  }
+}
+
+// Imagen del reloj
+const imagen = new Image();
+imagen.src = "estrellareloj.png";
+
+let vrSeg = 0.1;
+let vrMin = vrSeg / 60;
+let vrHor = vrMin / 12;
+
+let angSeg = 0;
+let angMin = 0;
+let angHor = 0;
+
+function dibujarReloj() {
+  ctx.clearRect(0, 0, reloj.width, reloj.height);
+
+  if (imagen.complete) {
+    ctx.drawImage(imagen, 0, 0, reloj.width, reloj.height);
+  }
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angHor);
+  ctx.fillStyle = "#999";
+  ctx.fillRect(-3, -20, 6, 80);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angMin);
+  ctx.fillStyle = "#00b4d8";
+  ctx.fillRect(-2, -20, 4, 110);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angSeg);
+  ctx.fillStyle = "#ff006e";
+  ctx.fillRect(-1, -30, 2, 130);
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+  ctx.fillStyle = "#000";
+  ctx.fill();
+}
+
+function animar() {
+  dibujarFondo();
+  angSeg += vrSeg;
+  angMin += vrMin;
+  angHor += vrHor;
+  dibujarReloj();
+  requestAnimationFrame(animar);
+}
+
+animar();
+</script>
+</body>
+</html>
