@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Nave Verde - Espacio y Movimiento</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    color: white;
+    font-family: monospace;
+  }
+  canvas {
+    display: block;
+    margin: auto;
+    background: radial-gradient(circle at center, #1a0020, #100018, #050010);
+  }
+  #controles {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px 25px;
+    border: 1px solid #5a2b7a;
+    border-radius: 12px;
+    font-size: 14px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<canvas id="espacio"></canvas>
+<div id="controles">Flechas izquierda y derecha: girar nave | Barra espaciadora: acelerar</div>
+
+<script>
+const lienzo = document.getElementById("espacio");
+const ctx = lienzo.getContext("2d");
+lienzo.width = innerWidth;
+lienzo.height = innerHeight;
+
+const teclas = {};
+const nave = {
+  x: lienzo.width / 2,
+  y: lienzo.height / 2,
+  angulo: 0,
+  vx: 0,
+  vy: 0,
+  empuje: 0.05,
+  friccion: 0.99
+};
+
+document.addEventListener("keydown", e => teclas[e.key] = true);
+document.addEventListener("keyup", e => teclas[e.key] = false);
+
+const estrellas = Array.from({length: 250}, () => ({
+  x: Math.random() * lienzo.width,
+  y: Math.random() * lienzo.height,
+  r: Math.random() * 1.8
+}));
+
+function dibujarEstrellas() {
+  ctx.fillStyle = "white";
+  for (const s of estrellas) {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function dibujarNave() {
+  ctx.save();
+  ctx.translate(nave.x, nave.y);
+  ctx.rotate(nave.angulo);
+
+  ctx.beginPath();
+  ctx.moveTo(18, 0);
+  ctx.lineTo(-10, 10);
+  ctx.lineTo(-10, -10);
+  ctx.closePath();
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(-5, 8);
+  ctx.lineTo(-15, 15);
+  ctx.lineTo(-5, 10);
+  ctx.moveTo(-5, -8);
+  ctx.lineTo(-15, -15);
+  ctx.lineTo(-5, -10);
+  ctx.stroke();
+
+  if (teclas[" "]) {
+    ctx.beginPath();
+    ctx.moveTo(-10, -5);
+    ctx.lineTo(-18 - Math.random() * 6, 0);
+    ctx.lineTo(-10, 5);
+    ctx.closePath();
+    ctx.fillStyle = "#00ff66";
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function actualizar() {
+  if (teclas["ArrowLeft"]) nave.angulo -= 0.08;
+  if (teclas["ArrowRight"]) nave.angulo += 0.08;
+
+  if (teclas[" "]) {
+    nave.vx += Math.cos(nave.angulo) * nave.empuje;
+    nave.vy += Math.sin(nave.angulo) * nave.empuje;
+  }
+
+  nave.vx *= nave.friccion;
+  nave.vy *= nave.friccion;
+  nave.x += nave.vx;
+  nave.y += nave.vy;
+
+  if (nave.x > lienzo.width) nave.x = 0;
+  if (nave.x < 0) nave.x = lienzo.width;
+  if (nave.y > lienzo.height) nave.y = 0;
+  if (nave.y < 0) nave.y = lienzo.height;
+}
+
+function ciclo() {
+  ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+  dibujarEstrellas();
+  actualizar();
+  dibujarNave();
+  requestAnimationFrame(ciclo);
+}
+
+ciclo();
+</script>
+</body>
+</html>
